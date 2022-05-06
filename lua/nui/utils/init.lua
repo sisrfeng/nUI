@@ -180,6 +180,8 @@ function _.render_lines(lines, bufnr, ns_id, linenr_start, linenr_end)
 end
 
 function _.normalize_layout_options(options)
+  local defer = false;
+
   options.relative = utils.defaults(options.relative, "win")
   if utils.is_type("string", options.relative) then
     options.relative = {
@@ -194,12 +196,22 @@ function _.normalize_layout_options(options)
     }
   end
 
+  if not options.position.row then
+    defer = true;
+  end
+
   if not utils.is_type("table", options.size) then
     options.size = {
       width = options.size,
       height = options.size,
     }
   end
+
+  if not options.size.width then
+    defer = true;
+  end
+
+  options._should_defer_layout = defer;
 
   return options
 end
