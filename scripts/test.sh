@@ -1,5 +1,8 @@
 #!/usr/bin/env sh
 
+
+echo  'debug 经常弹窗的timeout (by plenary):  进入了/home/wf/.local/share/nvim/PL/nUI/scripts/test.sh'
+
 set -eu
 
 test_dir="${1:-"nui"}"
@@ -7,15 +10,16 @@ test_dir="${1:-"nui"}"
 luacov_dir="$(dirname $(luarocks which luacov 2>/dev/null | head -1))"
 
 if test -n "${luacov_dir}"; then
-  rm -f luacov.*.out
-  export LUA_PATH=";;${luacov_dir}/?.lua"
+    rm -f luacov.*.out
+    export LUA_PATH=";;${luacov_dir}/?.lua"
 fi
 
-nvim --headless --noplugin -u tests/minimal_init.vim -c "PlenaryBustedDirectory tests/${test_dir}/ { minimal_init = 'tests/minimal_init.vim'; sequential = true }"
+nvim --headless --noplugin -u tests/minimal_init.vim -c \
+    "PlenaryBustedDirectory tests/${test_dir}/ { minimal_init = 'tests/minimal_init.vim'; sequential = true }"
 
 if test -n "${luacov_dir}"; then
-  luacov
+    luacov
 
-  echo
-  tail -n +$(($(cat luacov.report.out | grep -n "^Summary$" | cut -d":" -f1) - 1)) luacov.report.out
+    echo
+    tail -n +$(($(cat luacov.report.out | grep -n "^Summary$" | cut -d":" -f1) - 1)) luacov.report.out
 fi
